@@ -1,6 +1,15 @@
 import { DependencyGraph } from './graph.js';
 import { FileInfo } from './parser.js';
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export interface FormatterOptions {
   format: 'json' | 'tree' | 'html';
   depth?: number;
@@ -254,7 +263,7 @@ export async function formatHTML(
       <div class="node-list">
         ${nodes.map(node => `
           <div class="node-item ${node.type === 'external' ? 'external' : ''}">
-            ${node.type === 'external' ? '📦 ' : '📄 '}${node.id}
+            ${node.type === 'external' ? '📦 ' : '📄 '}${escapeHtml(node.id)}
           </div>
         `).join('')}
       </div>
