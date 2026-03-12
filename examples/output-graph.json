@@ -1,0 +1,79 @@
+{
+  "graph": {
+    "nodes": [
+      {
+        "id": "examples/date.ts",
+        "type": "file"
+      },
+      {
+        "id": "examples/logger.ts",
+        "type": "file"
+      },
+      {
+        "id": "examples/main.ts",
+        "type": "file"
+      },
+      {
+        "id": "examples/processor.ts",
+        "type": "file"
+      },
+      {
+        "id": "examples/utils.ts",
+        "type": "file"
+      },
+      {
+        "id": "./logger.js",
+        "type": "external"
+      },
+      {
+        "id": "./processor.js",
+        "type": "external"
+      },
+      {
+        "id": "./utils.js",
+        "type": "external"
+      },
+      {
+        "id": "./date.js",
+        "type": "external"
+      }
+    ],
+    "edges": [
+      {
+        "from": "examples/date.ts",
+        "to": "./logger.js",
+        "type": "static"
+      },
+      {
+        "from": "examples/logger.ts",
+        "to": "./processor.js",
+        "type": "static"
+      },
+      {
+        "from": "examples/main.ts",
+        "to": "./utils.js",
+        "type": "static"
+      },
+      {
+        "from": "examples/processor.ts",
+        "to": "./logger.js",
+        "type": "static"
+      },
+      {
+        "from": "examples/utils.ts",
+        "to": "./date.js",
+        "type": "static"
+      }
+    ]
+  },
+  "stats": {
+    "totalNodes": 9,
+    "fileNodes": 5,
+    "externalNodes": 4,
+    "totalEdges": 5,
+    "cycles": 0,
+    "avgDepth": 0.56,
+    "maxDepth": 1
+  },
+  "cycles": []
+}

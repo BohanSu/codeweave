@@ -1,0 +1,22 @@
+Dependency Analysis
+=================
+Files: 5 | External: 4 | Edges: 5
+Cycles: 0 | Avg Depth: 0.56 | Max Depth: 1
+
+Dependency Trees:
+
+examples/date.ts (depth: 1)
+  ├── ./logger.js [external]
+
+examples/logger.ts (depth: 1)
+  ├── ./processor.js [external]
+
+examples/main.ts (depth: 1)
+  ├── ./utils.js [external]
+
+examples/processor.ts (depth: 1)
+  ├── ./logger.js [external]
+
+examples/utils.ts (depth: 1)
+  ├── ./date.js [external]
+
