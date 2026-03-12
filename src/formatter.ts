@@ -61,12 +61,17 @@ export async function formatTree(
   const { computeDepths, getStats } = await import('./graph.js');
   const depths = computeDepths(graph);
   const stats = getStats(graph);
+  const maxDepthToDisplay = _depth !== undefined ? _depth : Infinity;
 
   let output = '';
   output += `Dependency Analysis\n`;
   output += `=================\n`;
   output += `Files: ${stats.fileNodes} | External: ${stats.externalNodes} | Edges: ${stats.totalEdges}\n`;
   output += `Cycles: ${stats.cycles} | Avg Depth: ${stats.avgDepth} | Max Depth: ${stats.maxDepth}\n\n`;
+
+  if (_depth !== undefined) {
+    output += `Showing nodes up to depth: ${_depth}\n\n`;
+  }
 
   if (cycles.length > 0) {
     output += `Cycles Detected:\n`;
@@ -78,19 +83,36 @@ export async function formatTree(
 
   const fileNodes = Array.from(graph.nodes.entries())
     .filter(([_, node]) => node.type === 'file')
+    .filter(([id, _]) => (depths.get(id) || 0) <= maxDepthToDisplay)
     .sort((a, b) => (depths.get(a[0]) || 0) - (depths.get(b[0]) || 0));
+
+  if (fileNodes.length === 0) {
+    output += 'No files within the specified depth limit.\n';
+    return output;
+  }
 
   output += `Dependency Trees:\n`;
   for (const [nodeId] of fileNodes) {
-    output += `\n${nodeId} (depth: ${depths.get(nodeId) || 0})\n`;
+    const nodeDepth = depths.get(nodeId) || 0;
+    output += `\n${nodeId} (depth: ${nodeDepth})\n`;
+    
     const neighbors = graph.adjacency.get(nodeId) || new Set();
-    if (neighbors.size === 0) {
-      output += `  └── (no direct imports)\n`;
+    const filteredNeighbors: string[] = [];
+    for (const neighbor of neighbors) {
+      const neighborDepth = depths.get(neighbor) || 0;
+      if (neighborDepth <= maxDepthToDisplay) {
+        filteredNeighbors.push(neighbor);
+      }
+    }
+
+    if (filteredNeighbors.length === 0) {
+      output += `  └── (no direct imports within depth limit)\n`;
     } else {
-      for (const neighbor of neighbors) {
+      for (const neighbor of filteredNeighbors) {
         const neighborNode = graph.nodes.get(neighbor);
         const neighborType = neighborNode?.type === 'external' ? '[external]' : '';
-        output += `  ├── ${neighbor} ${neighborType}\n`;
+        const neighborDepth = depths.get(neighbor) || 0;
+        output += `  ├── ${neighbor} ${neighborType} (depth: ${neighborDepth})\n`;
       }
     }
   }
